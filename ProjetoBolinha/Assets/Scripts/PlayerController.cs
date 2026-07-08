@@ -1,17 +1,22 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
     [Header("Cooldown")]
-public float tempoRecarga = 2f;
-private float proximoEmpurrao = 0f;
+    public float tempoRecarga = 2f;
+    private float proximoEmpurrao = 0f;
+
     public float speed = 6f;
     public string actionMap;
     public float pushForce = 15f;
     public float pushRange = 5f;
 
     public PlayerController opponent;
+
+    [Header("Interface")]
+    public Slider cooldownBar;
 
     private PlayerControls controls;
     private Rigidbody rb;
@@ -32,6 +37,18 @@ private float proximoEmpurrao = 0f;
         map.FindAction("Push").performed += Push;
     }
 
+    private void Update()
+    {
+        if (cooldownBar == null)
+            return;
+
+        float progresso = Mathf.Clamp01(
+            (tempoRecarga - (proximoEmpurrao - Time.time)) / tempoRecarga
+        );
+
+        cooldownBar.value = progresso;
+    }
+
     private void FixedUpdate()
     {
         Vector3 movimento = new Vector3(moveInput.x, 0, moveInput.y);
@@ -42,29 +59,29 @@ private float proximoEmpurrao = 0f;
             movimento.z * speed
         );
     }
+
     private void Push(InputAction.CallbackContext ctx)
-{
-    if (Time.time < proximoEmpurrao)
-        return;
+    {
+        if (Time.time < proximoEmpurrao)
+            return;
 
-    proximoEmpurrao = Time.time + tempoRecarga;
+        proximoEmpurrao = Time.time + tempoRecarga;
 
-    if (opponent == null)
-        return;
+        if (opponent == null)
+            return;
 
-    float distance = Vector3.Distance(transform.position, opponent.transform.position);
+        float distance = Vector3.Distance(transform.position, opponent.transform.position);
 
-    if (distance > pushRange)
-        return;
+        if (distance > pushRange)
+            return;
 
-    Vector3 direction =
-        (opponent.transform.position - transform.position).normalized;
+        Vector3 direction =
+            (opponent.transform.position - transform.position).normalized;
 
-    float force = pushForce * (1f - (distance / pushRange));
+        float force = pushForce * (1f - (distance / pushRange));
 
-    Rigidbody enemyRb = opponent.GetComponent<Rigidbody>();
+        Rigidbody enemyRb = opponent.GetComponent<Rigidbody>();
 
-    enemyRb.AddForce(direction * force, ForceMode.Impulse);
+        enemyRb.AddForce(direction * force, ForceMode.Impulse);
+    }
 }
-}
-
