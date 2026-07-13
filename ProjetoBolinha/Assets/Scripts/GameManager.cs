@@ -15,6 +15,10 @@ public class GameManager : MonoBehaviour
     public TMP_Text textoP1;
     public TMP_Text textoP2;
 
+    [Header("Tela de Vitória")]
+    public GameObject painelVitoria;
+    public TMP_Text textoVitoria;
+
     private int pontosP1 = 0;
     private int pontosP2 = 0;
 
@@ -26,6 +30,9 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         AtualizarInterface();
+
+        if (painelVitoria != null)
+            painelVitoria.SetActive(false);
     }
 
     public void PlayerPerdeu(PlayerController player)
@@ -39,13 +46,13 @@ public class GameManager : MonoBehaviour
 
         if (pontosP1 >= 2)
         {
-            Debug.Log("Jogador 1 venceu a partida!");
+            MostrarVitoria("Jogador 1 venceu!");
             return;
         }
 
         if (pontosP2 >= 2)
         {
-            Debug.Log("Jogador 2 venceu a partida!");
+            MostrarVitoria("Jogador 2 venceu!");
             return;
         }
 
@@ -68,5 +75,27 @@ public class GameManager : MonoBehaviour
 
         rb1.linearVelocity = Vector3.zero;
         rb2.linearVelocity = Vector3.zero;
+    }
+
+    void MostrarVitoria(string vencedor)
+    {
+        painelVitoria.SetActive(true);
+        textoVitoria.text = vencedor;
+
+        Time.timeScale = 0f;
+    }
+
+    public void ReiniciarJogo()
+    {
+        Time.timeScale = 1f;
+
+        pontosP1 = 0;
+        pontosP2 = 0;
+
+        AtualizarInterface();
+
+        painelVitoria.SetActive(false);
+
+        ReiniciarRound();
     }
 }

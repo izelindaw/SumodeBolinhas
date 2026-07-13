@@ -8,6 +8,12 @@ public class PlayerController : MonoBehaviour
     public float tempoRecarga = 2f;
     private float proximoEmpurrao = 0f;
 
+    [Header("Bolinhas")]
+    public BallData[] bolinhas;
+    public bool jogador1;
+
+    private BallData dadosBolinha;
+
     public float speed = 6f;
     public string actionMap;
     public float pushForce = 15f;
@@ -25,6 +31,21 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+
+        // Carrega a bolinha escolhida na tela de seleção
+        int indice = jogador1 ? PlayerPrefs.GetInt("P1", 0) : PlayerPrefs.GetInt("P2", 0);
+
+        if (bolinhas != null && bolinhas.Length > indice)
+        {
+            dadosBolinha = bolinhas[indice];
+
+            speed = dadosBolinha.velocidade;
+            pushForce = dadosBolinha.forcaEmpurrao;
+            rb.mass = dadosBolinha.massa;
+
+            transform.localScale = Vector3.one * dadosBolinha.tamanho;
+            GetComponent<Renderer>().material.color = dadosBolinha.cor;
+        }
 
         controls = new PlayerControls();
 
@@ -75,8 +96,7 @@ public class PlayerController : MonoBehaviour
         if (distance > pushRange)
             return;
 
-        Vector3 direction =
-            (opponent.transform.position - transform.position).normalized;
+        Vector3 direction = (opponent.transform.position - transform.position).normalized;
 
         float force = pushForce * (1f - (distance / pushRange));
 
