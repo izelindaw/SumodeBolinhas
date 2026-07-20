@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
 
-        // Carrega a bolinha escolhida na tela de seleção
+        // Carrega a bolinha escolhida na tela de seleï¿½ï¿½o
         int indice = jogador1 ? PlayerPrefs.GetInt("P1", 0) : PlayerPrefs.GetInt("P2", 0);
 
         if (bolinhas != null && bolinhas.Length > indice)
@@ -74,11 +74,11 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 movimento = new Vector3(moveInput.x, 0, moveInput.y);
 
-        rb.linearVelocity = new Vector3(
+        rb.AddForce(new Vector3(
             movimento.x * speed,
             rb.linearVelocity.y,
             movimento.z * speed
-        );
+        ));
     }
 
     private void Push(InputAction.CallbackContext ctx)
